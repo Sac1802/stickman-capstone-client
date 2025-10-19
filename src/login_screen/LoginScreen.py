@@ -29,10 +29,10 @@ class LoginScreen:
         self.background = pygame.transform.scale(self.background, (800, 500))
 
         # reproducir musica
-        music_path = os.path.join("static", "login.mp3")
-        pygame.mixer.music.load(music_path)
-        pygame.mixer.music.set_volume(0.7)
-        pygame.mixer.music.play(-1)
+        #music_path = os.path.join("static", "login.mp3")
+        # pygame.mixer.music.load(music_path)
+        # pygame.mixer.music.set_volume(0.7)
+        # pygame.mixer.music.play(-1)
 
         # sonido del boton
         self.button_sound.set_volume(1.0)

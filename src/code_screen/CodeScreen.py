@@ -2,14 +2,12 @@ import pygame
 import os
 import math
 
-class RegisterScreen:
+class CodeScreen:
 
     def __init__(self, game):
         self.game = game
         self.font = pygame.font.Font(None, 32)
         self.username = ""
-        self.email = ""
-        self.password = ""
         self.active_field = None
         self.t = 0 # contador de colores
 
@@ -19,12 +17,10 @@ class RegisterScreen:
         self.title_img = pygame.transform.scale(self.title_img, (200, 150))
 
         # text field position
-        self.input_box_user = pygame.Rect(180, 220, 200, 32)
-        self.input_box_cuser = pygame.Rect(530, 220, 200, 32)
-        self.input_box_pass = pygame.Rect(180, 265, 200, 32)
+        self.input_box_user = pygame.Rect(260, 250, 300, 32)
 
         # Botones
-        self.register_button = pygame.Rect(350, 340, 100, 40)
+        self.register_button = pygame.Rect(340, 340, 130, 40)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -57,7 +53,7 @@ class RegisterScreen:
                     self.password += event.unicode
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.game.set_screen("login")
+            self.game.set_screen("register")
 
     def update(self):
         pass
@@ -86,24 +82,19 @@ class RegisterScreen:
         pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) # derecha
 
          # Labels
-        screen.blit(self.font.render("Usuario :", True, (200,200,200)), (70, 220))
-        screen.blit(self.font.render("Email :", True, (200,200,200)), (445, 222))
-        screen.blit(self.font.render("Contraseña:", True, (200,200,200)), (42, 270))
+        screen.blit(self.font.render("Ingresar Codigo", True, (200,200,200)), (320, 210))
 
         # Cajas
         pygame.draw.rect(screen, (200,200,200), self.input_box_user)
-        pygame.draw.rect(screen, (200,200,200), self.input_box_cuser)
-        pygame.draw.rect(screen, (200,200,200), self.input_box_pass)
 
         # Boton
         pygame.draw.rect(screen, (100,100,200), self.register_button)
 
         # Texto en cajas
         screen.blit(self.font.render(self.username, True, (255,255,255)), (self.input_box_user.x+5, self.input_box_user.y+5))
-        screen.blit(self.font.render(self.email, True, (255,255,255)), (self.input_box_cuser.x+5, self.input_box_cuser.y+5))
-        screen.blit(self.font.render("*"*len(self.password), True, (255,255,255)), (self.input_box_pass.x+5, self.input_box_pass.y+5))
 
         # Botones
-        screen.blit(self.font.render("Register", True, (200,200,122)), (self.register_button.x+10, self.register_button.y+10))
+        screen.blit(self.font.render("send code", True, (255,255,122)), (self.register_button.x+10, self.register_button.y+10))
 
-        screen.blit(self.font.render("Pantalla de Registro (ESC para volver)", True, color), (50, 440))
+        # Regresar a registro
+        screen.blit(self.font.render("Pantalla de validacion de codigo (ESC para volver)", True, color), (50, 440))
