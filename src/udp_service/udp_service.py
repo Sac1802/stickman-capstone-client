@@ -9,6 +9,7 @@ SERVER_PORT = 9876
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.setblocking(False)
+client_socket.bind(("", 0))
 
 message_queue = []
 
@@ -21,6 +22,12 @@ def receive_message():
             message_queue.append(message)
         except BlockingIOError:
             time.sleep(0.01)
+        except socket.error as e:
+            if e.winerror == 10022:
+                print("Error de socket: Argumento no válido. El servidor puede haberse cerrado o hay un problema de red.")
+                time.sleep(1)
+            else:
+                print(f"Error de socket no manejado: {e}")
         except Exception as e:
             print(f"Error receiving or decrypting: {e}")
             pass
