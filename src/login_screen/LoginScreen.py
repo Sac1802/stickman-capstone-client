@@ -242,8 +242,14 @@ class LoginScreen:
 
     def login(self):
         try:
-            # Conectarse y obtener claves YA decodificadas (bytes)
-            client, key, iv = connect_to_server()
+            # Use persistent connection from game object
+            client = self.game.client_socket
+            key = self.game.aes_key
+            iv = self.game.aes_iv
+
+            if not client or not key or not iv:
+                print("⚠️ Error: Client socket or AES keys not initialized.")
+                return
 
             # Crear el request de login
             request = {
@@ -259,12 +265,11 @@ class LoginScreen:
 
             print("🔓 Respuesta del servidor:", response)
             self.game.game_user_id = response.get("userId")
+            self.game.game_username = self.username # Store the username
 
             print(f"USERID: {self.game.game_user_id}")
 
             self.game.set_screen("dashboard")
-
-            client.close()
 
         except Exception as e:
             print(f"⚠️ Error en login: {e}")
