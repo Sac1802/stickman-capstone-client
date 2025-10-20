@@ -237,6 +237,7 @@ class RegisterScreen:
 
         screen.blit(self.font.render("Pantalla de Registro (ESC para volver)", True, color), (50, 440))
 
+
     def register(self):
         client, key, iv = connect_to_server()
 
