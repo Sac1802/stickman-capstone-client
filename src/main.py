@@ -3,7 +3,7 @@ from login_screen.LoginScreen import LoginScreen
 from register_screen.RegisterScreen import RegisterScreen
 from combat_screen.CombatScreen import CombatScreen
 from code_screen.CodeScreen import CodeScreen
-from dashboard.dashboardScreen import DashboardScreen
+from dashboard.DashboardScreen import DashboardScreen
 from tcp_listener import TcpListener
 
 import pygame
