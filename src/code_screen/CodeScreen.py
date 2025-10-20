@@ -7,7 +7,7 @@ class CodeScreen:
     def __init__(self, game):
         self.game = game
         self.font = pygame.font.Font(None, 32)
-        self.username = ""
+        self.code = ""
         self.active_field = None
         self.t = 0 # contador de colores
 
@@ -17,40 +17,26 @@ class CodeScreen:
         self.title_img = pygame.transform.scale(self.title_img, (200, 150))
 
         # text field position
-        self.input_box_user = pygame.Rect(260, 250, 300, 32)
+        self.input_box_code = pygame.Rect(260, 250, 300, 32)
 
         # Botones
-        self.register_button = pygame.Rect(340, 340, 130, 40)
+        self.code_button = pygame.Rect(340, 340, 130, 40)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.input_box_user.collidepoint(event.pos):
-                self.active_field = "user"
-            elif self.input_box_pass.collidepoint(event.pos):
-                self.active_field = "pass"
-            elif self.input_box_cuser.collidepoint(event.pos):
-                self.active_field = "email"
-            elif self.register_button.collidepoint(event.pos):
-                self.game.set_screen("code")
+            if self.input_box_code.collidepoint(event.pos):
+                self.active_field = "code"
+            elif self.code_button.collidepoint(event.pos):
+                self.verify_code()
             else:
                 self.active_field = None
 
         elif event.type == pygame.KEYDOWN:
-            if self.active_field == "user":
+            if self.active_field == "code":
                 if event.key == pygame.K_BACKSPACE:
-                    self.username = self.username[:-1]
+                    self.code = self.code[:-1]
                 else:
-                    self.username += event.unicode
-            elif self.active_field == "email":
-                if event.key == pygame.K_BACKSPACE:
-                      self.email = self.email[:-1]
-                else:
-                      self.email += event.unicode
-            elif self.active_field == "pass":
-                if event.key == pygame.K_BACKSPACE:
-                    self.password = self.password[:-1]
-                else:
-                    self.password += event.unicode
+                    self.code += event.unicode
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.game.set_screen("register")
@@ -85,16 +71,19 @@ class CodeScreen:
         screen.blit(self.font.render("Ingresar Codigo", True, (200,200,200)), (320, 210))
 
         # Cajas
-        pygame.draw.rect(screen, (200,200,200), self.input_box_user)
+        pygame.draw.rect(screen, (200,200,200), self.input_box_code)
 
         # Boton
-        pygame.draw.rect(screen, (100,100,200), self.register_button)
+        pygame.draw.rect(screen, (100,100,200), self.code_button)
 
         # Texto en cajas
-        screen.blit(self.font.render(self.username, True, (255,255,255)), (self.input_box_user.x+5, self.input_box_user.y+5))
+        screen.blit(self.font.render(self.code, True, (255,255,255)), (self.input_box_code.x+5, self.input_box_code.y+5))
 
         # Botones
-        screen.blit(self.font.render("send code", True, (255,255,122)), (self.register_button.x+10, self.register_button.y+10))
+        screen.blit(self.font.render("send code", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))
 
         # Regresar a registro
         screen.blit(self.font.render("Pantalla de validacion de codigo (ESC para volver)", True, color), (50, 440))
+
+    def verify_code(self):
+        print("working")
