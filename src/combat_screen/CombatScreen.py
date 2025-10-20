@@ -4,6 +4,8 @@ import json
 
 import encryptAES.manageAES
 import udp_service.udp_service
+direction = ""
+playerId = ""
 
 class CombatScreen:
 
@@ -25,18 +27,19 @@ class CombatScreen:
         self.player2_image = pygame.transform.flip(self.player_image, True, False)
 
     def handle_event(self, event):
+        global direction
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.game.set_screen("login")
 
             elif event.key == pygame.K_UP:
                 self.player1_pos.y -= 10
-            elif event.key == pygame.K_DOWN:
-                self.player1_pos.y += 10
             elif event.key == pygame.K_LEFT:
                 self.player1_pos.x -= 10
+                direction = "left"
             elif event.key == pygame.K_RIGHT:
                 self.player1_pos.x += 10
+                direction = "right"
 
     def handled_player2(self):
         positions = udp_service.udp_service.return_value()
@@ -58,8 +61,9 @@ class CombatScreen:
         screen.blit(text, (100, 100))
 
     def send_position(self):
+        global playerId
         data_transfer = {
-            "IdPlayer": player_id,
+            "IdPlayer": playerId,
             "eventType": "PLAYER_MOVE",
             "payload": {
                 "x": self.player1_pos.x,
@@ -67,6 +71,6 @@ class CombatScreen:
                 "direction": direction
             }
         }
-        data_transfer.update(data_transfer)
+        
 
 
