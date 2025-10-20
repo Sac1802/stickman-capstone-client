@@ -43,7 +43,7 @@ def load_aes_keys(path=KEY_FILE):
 
 
 # -------------------------------
-# 🌐 Conexión con servidor
+#  Conexión con servidor
 # -------------------------------
 
 def connect_to_server(host="127.0.0.1", port=5000, save_keys=True):
@@ -152,7 +152,7 @@ class LoginScreen:
         self.title_img = pygame.image.load(title_path).convert_alpha()
         self.title_img = pygame.transform.scale(self.title_img, (300, 150))
 
-        # Botón de sonido
+        # Sonido de boton
         sound_path = os.path.join("static", "button.wav")
         if os.path.exists(sound_path):
             self.button_sound = pygame.mixer.Sound(sound_path)
@@ -262,7 +262,7 @@ class LoginScreen:
 
             print(f"USERID: {self.game.game_user_id}")
 
-            self.game.set_screen("combat")
+            self.game.set_screen("dashboard")
 
             client.close()
 
