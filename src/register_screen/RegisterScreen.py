@@ -122,11 +122,10 @@ def receive_encrypted_response(client, key, iv):
             break
     encrypted_b64 = data.decode().strip()
 
-    print(f"📦 Respuesta cifrada recibida (raw): '{encrypted_b64}'")
+    print(f"Respuesta cifrada recibida (raw): '{encrypted_b64}'")
 
     decrypted_json = decrypt_aes(encrypted_b64, key, iv)
     return json.loads(decrypted_json)
-
 
 # ============================================
 # CLASE RegisterScreen
@@ -234,7 +233,6 @@ class RegisterScreen:
 
         # Botones
         screen.blit(self.font.render("Register", True, (200,200,122)), (self.register_button.x+10, self.register_button.y+10))
-
         screen.blit(self.font.render("Pantalla de Registro (ESC para volver)", True, color), (50, 440))
 
 
@@ -246,7 +244,8 @@ class RegisterScreen:
             "payload": {"username": self.username, "password": self.password, "email": self.email}
         }
 
-        print(request)
+        # guardar el email para usarlo en el code
+        self.game.game_user_email = self.email;
 
         # Enviar la solicitud cifrada
         send_encrypted_request(client, request, key, iv)
@@ -254,6 +253,6 @@ class RegisterScreen:
         # Recibir y descifrar la respuesta
         response = receive_encrypted_response(client, key, iv)
 
-        print("🔓 Respuesta del servidor:", response)
+        print("Respuesta del servidor:", response)
 
         self.game.set_screen("code")

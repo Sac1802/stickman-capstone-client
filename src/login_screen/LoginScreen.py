@@ -122,7 +122,7 @@ def receive_encrypted_response(client, key, iv):
             break
     encrypted_b64 = data.decode().strip()
 
-    print(f"📦 Respuesta cifrada recibida (raw): '{encrypted_b64}'")
+    print(f"Respuesta cifrada recibida (raw): '{encrypted_b64}'")
 
     decrypted_json = decrypt_aes(encrypted_b64, key, iv)
     return json.loads(decrypted_json)
@@ -167,6 +167,7 @@ class LoginScreen:
         # Botones
         self.login_button = pygame.Rect(300, 320, 100, 40)
         self.register_button = pygame.Rect(410, 320, 100, 40)
+        self.combat_button = pygame.Rect(410, 370, 100, 40)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -179,7 +180,10 @@ class LoginScreen:
             elif self.register_button.collidepoint(event.pos):
                 if self.button_sound:
                     self.button_sound.play()
-                self.game.set_screen("register")
+                    self.game.set_screen("register")
+            elif self.combat_button.collidepoint(event.pos):
+                self.game.set_screen("combat")
+
             else:
                 self.active_field = None
 
@@ -228,6 +232,7 @@ class LoginScreen:
         pygame.draw.rect(screen, text_color, self.input_box_pass)
         pygame.draw.rect(screen, (100, 100, 200), self.login_button)
         pygame.draw.rect(screen, (100, 100, 200), self.register_button)
+        pygame.draw.rect(screen, (100, 100, 200), self.combat_button)
 
         screen.blit(self.font.render("By Said, Cristian and Leonardo", True, text_color), (220, 430))
         screen.blit(self.font.render(self.username, True, (255, 255, 255)),
@@ -239,6 +244,10 @@ class LoginScreen:
                     (self.login_button.x + 20, self.login_button.y + 10))
         screen.blit(self.font.render("Register", True, (0, 0, 0)),
                     (self.register_button.x + 10, self.register_button.y + 10))
+
+        # boton de prueba para said
+        screen.blit(self.font.render("saidfi", True, (0, 0, 0)),
+                    (self.combat_button.x + 20, self.combat_button.y + 10))
 
     def login(self):
         try:
@@ -263,7 +272,7 @@ class LoginScreen:
             # Recibir y descifrar la respuesta
             response = receive_encrypted_response(client, key, iv)
 
-            print("🔓 Respuesta del servidor:", response)
+            print("Respuesta del servidor:", response)
             self.game.game_user_id = response.get("userId")
             self.game.game_username = self.username # Store the username
 
@@ -272,4 +281,4 @@ class LoginScreen:
             self.game.set_screen("dashboard")
 
         except Exception as e:
-            print(f"⚠️ Error en login: {e}")
+            print(f"Error en login: {e}")

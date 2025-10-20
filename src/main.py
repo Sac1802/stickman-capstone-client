@@ -3,8 +3,7 @@ from login_screen.LoginScreen import LoginScreen
 from register_screen.RegisterScreen import RegisterScreen
 from combat_screen.CombatScreen import CombatScreen
 from code_screen.CodeScreen import CodeScreen
-from dashboard.DashboardScreen import DashboardScreen
-from tcp_listener import TcpListener
+from dashboard.dashboardScreen import DashboardScreen
 
 import pygame
 import socket
@@ -30,39 +29,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_user_id = 0
-        self.game_username = None
-        self.client_socket = None
-        self.aes_key = None
-        self.aes_iv = None
-        self.tcp_listener_thread = None
-        self.message_queue = queue.Queue() # Initialize the message queue
-
-        # Establish persistent TCP connection and receive AES keys
-        try:
-            host = "127.0.0.1"
-            port = 5000
-            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.client_socket.connect((host, port))
-            print("Conectado al servidor TCP.")
-
-            raw_data = self.client_socket.recv(4096).decode().strip()
-            print(f" Datos recibidos del servidor: {raw_data}")
-
-            clean_data = raw_data.replace("\\u003d", "=").replace('"', "")
-            key_b64, iv_b64 = [x.strip() for x in clean_data.split(":")]
-
-            key_b64 = fix_base64_padding(key_b64)
-            iv_b64 = fix_base64_padding(iv_b64)
-
-            self.aes_key = base64.b64decode(key_b64)
-            self.aes_iv = base64.b64decode(iv_b64)
-
-            print(f"Clave AES (bytes): {len(self.aes_key)} bytes")
-            print(f"IV (bytes): {len(self.aes_iv)} bytes")
-
-        except Exception as e:
-            print(f"Error establishing initial connection or receiving keys: {e}")
-            self.running = False # Stop game if connection fails
+        self.game_user_email = ""
 
         self.screens = {
             "login": LoginScreen(self),
