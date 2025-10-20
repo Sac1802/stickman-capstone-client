@@ -5,6 +5,7 @@ import os
 from encryptAES import manageAES
 from udp_service import udp_service
 
+
 class CombatScreen:
     def __init__(self, game):
         self.game = game
@@ -17,8 +18,26 @@ class CombatScreen:
         self.player_image = pygame.image.load(player_skin).convert_alpha()
         self.player_image = pygame.transform.scale(self.player_image, (50, 100))
 
+        self.attack_frames = [
+            pygame.transform.scale(
+                pygame.image.load(os.path.join("static/sprites/sprite_player/", "sprite_02.png")).convert_alpha(),
+                (50, 100)),
+            pygame.transform.scale(
+                pygame.image.load(os.path.join("static/sprites/sprite_player/", "sprite_03.png")).convert_alpha(),
+                (50, 100)),
+            pygame.transform.scale(
+                pygame.image.load(os.path.join("static/sprites/sprite_player/", "sprite_04.png")).convert_alpha(),
+                (50, 100))
+        ]
+
+        self.is_attacking = False
+        self.attack_frame_index = 0
+        self.attack_animation_speed = 0.2
+
         self.player1_pos = pygame.Vector2(200, 300)
         self.player2_pos = pygame.Vector2(600, 300)
+
+        self.player1_image = self.player_image
         self.player2_image = pygame.transform.flip(self.player_image, True, False)
 
         self.direction = ""
@@ -26,23 +45,43 @@ class CombatScreen:
         self.player1_health = 100
         self.player2_health = 100
 
+        self.player1_velocity_y = 0
+        self.player1_on_ground = True
+        self.ground_level = 300
+        self.gravity = 0.8
+        self.jump_strength = -15
+
+        self.moving_left = False
+        self.moving_right = False
+
+        self.player2_direction = 'left'
+
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 self.game.set_screen("login")
-
             elif event.key == pygame.K_UP:
-                self.player1_pos.y -= 10
+                if self.player1_on_ground:
+                    self.player1_velocity_y = self.jump_strength
+                    self.player1_on_ground = False
+                    if not self.player1_on_ground:
+                        self.player1_image = pygame.transform.scale(pygame.image.load(
+                            os.path.join("static/sprites/sprite_player/", "sprite_02.png")).convert_alpha(), (50, 100))
             elif event.key == pygame.K_LEFT:
-                self.player1_pos.x -= 10
-                self.direction = "left"
-                self.send_position(self.player1_pos.x, self.player1_pos.y)
+                self.moving_left = True
             elif event.key == pygame.K_RIGHT:
-                self.player1_pos.x += 10
-                self.direction = "right"
-                self.send_position(self.player1_pos.x, self.player1_pos.y)
+                self.moving_right = True
             elif event.key == pygame.K_SPACE:
-                self.send_attack()
+                if not self.is_attacking:
+                    self.is_attacking = True
+                    self.attack_frame_index = 0
+                    self.send_attack()
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                self.moving_left = False
+            elif event.key == pygame.K_RIGHT:
+                self.moving_right = False
 
     def process_server_messages(self):
         server_data = udp_service.get_message()
@@ -56,6 +95,11 @@ class CombatScreen:
             if server_data.get("IdPlayer") != self.playerId:
                 self.player2_pos.x = payload.get("x")
                 self.player2_pos.y = payload.get("y")
+                self.player2_direction = payload.get("direction")
+                if self.player2_direction == "left":
+                    self.player2_image = pygame.transform.flip(self.player_image, True, False)
+                else:
+                    self.player2_image = self.player_image
 
         elif event_type == "DAMAGE_DEALT":
             payload = server_data.get("payload", {})
@@ -74,20 +118,65 @@ class CombatScreen:
 
     def update(self):
         self.process_server_messages()
+        self.check_collisions()
+
+        if self.is_attacking:
+            self.attack_frame_index += self.attack_animation_speed
+            if self.attack_frame_index >= len(self.attack_frames):
+                self.is_attacking = False
+                self.attack_frame_index = 0
+
+        if self.moving_left:
+            self.player1_pos.x -= 10
+            self.direction = "left"
+            self.send_position(self.player1_pos.x, self.player1_pos.y)
+        if self.moving_right:
+            self.player1_pos.x += 10
+            self.direction = "right"
+            self.send_position(self.player1_pos.x, self.player1_pos.y)
+
+        if not self.player1_on_ground:
+            self.player1_velocity_y += self.gravity
+            self.player1_pos.y += self.player1_velocity_y
+
+        if self.player1_pos.y >= self.ground_level:
+            self.player1_pos.y = self.ground_level
+            self.player1_velocity_y = 0
+            self.player1_on_ground = True
+
+    def check_collisions(self):
+        player1_rect = self.player1_image.get_rect(topleft=self.player1_pos)
+        player2_rect = self.player2_image.get_rect(topleft=self.player2_pos)
+
+        if player1_rect.colliderect(player2_rect):
+            print("Collision detected!")
 
     def draw_health_bars(self, screen):
-        # Barra de vida Jugador 1
         pygame.draw.rect(screen, (255, 0, 0), (self.player1_pos.x - 25, self.player1_pos.y - 20, 100, 10))
-        pygame.draw.rect(screen, (0, 255, 0), (self.player1_pos.x - 25, self.player1_pos.y - 20, self.player1_health, 10))
+        pygame.draw.rect(screen, (0, 255, 0),
+                         (self.player1_pos.x - 25, self.player1_pos.y - 20, self.player1_health, 10))
 
-        # Barra de vida Jugador 2
         pygame.draw.rect(screen, (255, 0, 0), (self.player2_pos.x - 25, self.player2_pos.y - 20, 100, 10))
-        pygame.draw.rect(screen, (0, 255, 0), (self.player2_pos.x - 25, self.player2_pos.y - 20, self.player2_health, 10))
+        pygame.draw.rect(screen, (0, 255, 0),
+                         (self.player2_pos.x - 25, self.player2_pos.y - 20, self.player2_health, 10))
 
     def draw(self, screen):
         screen.blit(self.background, (0, 0))
-        screen.blit(self.player_image, self.player1_pos)
-        screen.blit(self.player2_image, self.player2_pos)
+
+        if self.is_attacking:
+            current_frame = self.attack_frames[int(self.attack_frame_index)]
+            screen.blit(current_frame, self.player1_pos)
+        else:
+            screen.blit(self.player1_image, self.player1_pos)
+
+        if self.player2_pos.y < self.ground_level:
+            if self.player2_direction == 'left':
+                flipped_jump = pygame.transform.flip(self.jump_image, True, False)
+                screen.blit(flipped_jump, self.player2_pos)
+            else:
+                screen.blit(self.jump_image, self.player2_pos)
+        else:
+            screen.blit(self.player2_image, self.player2_pos)
         self.draw_health_bars(screen)
 
         text = self.font.render("Juego de combate (ESC para salir)", True, (255, 255, 255))
