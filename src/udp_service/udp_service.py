@@ -44,6 +44,9 @@ def send_message(message: str):
 def return_value():
     return encryptAES.manageAES.decrypt(message, key, iv)
 
+def return_keys():
+    return [key, iv]
+
 def close_socket():
     client_socket.close()
     print("Socket close")
