@@ -4,11 +4,11 @@ import base64
 import json
 
 
-with open("static/aes_key.pem", "rb") as f:
-    aes_key = base64.b64decode(f.read().strip())
+with open("aes_keys.json", "r") as f:
+    data = json.load(f)
+    aes_key = base64.b64decode(data["key"])
+    aes_iv  = base64.b64decode(data["iv"])
 
-with open("static/aes_iv.pem", "rb") as f:
-    aes_iv = base64.b64decode(f.read().strip())
 
 assert len(aes_key) in [16, 24, 32]
 assert len(aes_iv) == 16
