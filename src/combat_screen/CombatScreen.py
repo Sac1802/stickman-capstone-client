@@ -57,7 +57,6 @@ class CombatScreen:
         screen.blit(text, (100, 100))
 
     def send_position(self, positionX, positionY):
-        value_key = udp_service.return_keys()
         data_transfer = {
             "IdPlayer": self.playerId,
             "eventType": "PLAYER_MOVE",
@@ -67,5 +66,5 @@ class CombatScreen:
                 "direction": self.direction
             }
         }
-        value_encrypt = manageAES.encrypt(data_transfer, value_key[0], value_key[1])
+        value_encrypt = manageAES.encrypt(data_transfer)
         udp_service.send_message(value_encrypt)
