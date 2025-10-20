@@ -25,7 +25,7 @@ class Game:
             "register": RegisterScreen(self),
             "code": CodeScreen(self),
             "combat": CombatScreen(self),
-            #"dashboard": DashboardScreen(self)
+            "dashboard": DashboardScreen(self)
         }
         self.current_screen = self.screens["login"]
 
