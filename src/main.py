@@ -3,7 +3,7 @@ from login_screen.LoginScreen import LoginScreen
 from register_screen.RegisterScreen import RegisterScreen
 from combat_screen.CombatScreen import CombatScreen
 from code_screen.CodeScreen import CodeScreen
-from dashboard.dashboardScreen import DashboardScreen
+from dashboard.DashboardScreen import DashboardScreen
 from tcp_listener import TcpListener
 
 import pygame
@@ -103,11 +103,6 @@ class Game:
         if self.tcp_listener_thread:
             self.tcp_listener_thread.stop()
             self.tcp_listener_thread.join()
-
-        # Close the client socket
-        if self.client_socket:
-            self.client_socket.close()
-            print("[Game] Client socket closed.")
 
 
 if __name__ == "__main__":
