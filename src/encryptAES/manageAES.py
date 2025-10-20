@@ -5,10 +5,10 @@ import json
 
 
 with open("static/aes_key.pem", "rb") as f:
-    aes_key = f.read().strip()
+    aes_key = base64.b64decode(f.read().strip())
 
 with open("static/aes_iv.pem", "rb") as f:
-    aes_iv = f.read().strip()
+    aes_iv = base64.b64decode(f.read().strip())
 
 assert len(aes_key) in [16, 24, 32]
 assert len(aes_iv) == 16
