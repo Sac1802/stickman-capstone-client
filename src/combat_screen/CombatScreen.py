@@ -9,9 +9,12 @@ class CombatScreen:
         self.game = game
         self.font = pygame.font.Font(None, 32)
 
-        self.background = pygame.image.load("/home/sac/Downloads/clientCN2/pygame-stick-game/src/sprites/enviroment/nature_5/orig.png").convert()
+        nature_5_path = os.path.join("static/sprites/enviroment/nature_5", "orig.png")
+        self.background = pygame.image.load(nature_5_path).convert()
 
-        self.player_image = pygame.image.load("/home/sac/Downloads/clientCN2/pygame-stick-game/src/sprites/sprite_player/sprite_07.png").convert()
+        player_skin = os.path.join("static/sprites/sprite_player/", "sprite_07.png")
+        self.player_image = pygame.image.load(player_skin).convert()
+
         self.player_pos = pygame.Vector2(300, 300)
 
     def handle_event(self, event):

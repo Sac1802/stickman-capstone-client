@@ -16,6 +16,7 @@ class Game:
         pygame.display.set_caption("Juego con pantallas")
         self.clock = pygame.time.Clock()
         self.running = True
+        self.game_user_id = 0
         self.screens = {
             "login": LoginScreen(self),
             "register": RegisterScreen(self),
