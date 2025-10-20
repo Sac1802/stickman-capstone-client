@@ -3,7 +3,7 @@ from login_screen.LoginScreen import LoginScreen
 from register_screen.RegisterScreen import RegisterScreen
 from combat_screen.CombatScreen import CombatScreen
 from code_screen.CodeScreen import CodeScreen
-from dashboard.DashboardScreen import DashboardScreen
+#from dashboard.DashboardScreen import DashboardScreen
 
 import pygame
 import socket
@@ -25,7 +25,7 @@ class Game:
             "register": RegisterScreen(self),
             "code": CodeScreen(self),
             "combat": CombatScreen(self),
-            "dashboard": DashboardScreen(self)
+            #"dashboard": DashboardScreen(self)
         }
         self.current_screen = self.screens["login"]
 
