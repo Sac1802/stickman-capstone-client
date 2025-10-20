@@ -28,7 +28,7 @@ def save_aes_keys(key_b64, iv_b64, path=KEY_FILE):
     }
     with open(path, "w") as f:
         json.dump(data, f, indent=4)
-    print(f"💾 Claves guardadas en {path}")
+    print(f" Claves guardadas en {path}")
 
 def load_aes_keys(path=KEY_FILE):
     """
@@ -43,7 +43,7 @@ def load_aes_keys(path=KEY_FILE):
 
 
 # -------------------------------
-# 🌐 Conexión con servidor
+#  Conexión con servidor
 # -------------------------------
 
 def connect_to_server(host="127.0.0.1", port=5000, save_keys=True):
@@ -64,7 +64,7 @@ def connect_to_server(host="127.0.0.1", port=5000, save_keys=True):
 
     # Recibir mensaje inicial "key:iv"
     raw_data = client.recv(4096).decode().strip()
-    print(f"📥 Datos recibidos del servidor: {raw_data}")
+    print(f" Datos recibidos del servidor: {raw_data}")
 
     # Limpiar escapes si vienen de JSON (\u003d)
     clean_data = raw_data.replace("\\u003d", "=").replace('"', "")
@@ -83,7 +83,7 @@ def connect_to_server(host="127.0.0.1", port=5000, save_keys=True):
 
     if save_keys:
         save_aes_keys(key_b64, iv_b64)
-        print(f"💾 Claves guardadas en aes_keys.json")
+        print(f" Claves guardadas en aes_keys.json")
 
     return client, key_bytes, iv_bytes
 
@@ -152,7 +152,7 @@ class LoginScreen:
         self.title_img = pygame.image.load(title_path).convert_alpha()
         self.title_img = pygame.transform.scale(self.title_img, (300, 150))
 
-        # Botón de sonido
+        # Sonido de boton
         sound_path = os.path.join("static", "button.wav")
         if os.path.exists(sound_path):
             self.button_sound = pygame.mixer.Sound(sound_path)
@@ -258,11 +258,11 @@ class LoginScreen:
             response = receive_encrypted_response(client, key, iv)
 
             print("🔓 Respuesta del servidor:", response)
-            #self.game.game_user_id = response.get("userId")
+            self.game.game_user_id = response.get("userId")
 
-            #print(f"USERID: {self.game.game_user_id}")
+            print(f"USERID: {self.game.game_user_id}")
 
-            self.game.set_screen("combat")
+            self.game.set_screen("dashboard")
 
             client.close()
 
