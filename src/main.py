@@ -3,7 +3,7 @@ from login_screen.LoginScreen import LoginScreen
 from register_screen.RegisterScreen import RegisterScreen
 from combat_screen.CombatScreen import CombatScreen
 from code_screen.CodeScreen import CodeScreen
-#from dashboard.DashboardScreen import DashboardScreen
+from dashboard.dashboardScreen import DashboardScreen
 
 import pygame
 import socket
@@ -18,12 +18,14 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_user_id = 0
+        self.game_user_email = ""
+
         self.screens = {
             "login": LoginScreen(self),
             "register": RegisterScreen(self),
             "code": CodeScreen(self),
             "combat": CombatScreen(self),
-            #"dashboard": DashboardScreen(self)
+            "dashboard": DashboardScreen(self)
         }
         self.current_screen = self.screens["login"]
 
