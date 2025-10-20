@@ -18,6 +18,8 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.game_user_id = 0
+        self.game_user_email = ""
+
         self.screens = {
             "login": LoginScreen(self),
             "register": RegisterScreen(self),

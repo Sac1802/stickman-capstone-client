@@ -122,7 +122,7 @@ def receive_encrypted_response(client, key, iv):
             break
     encrypted_b64 = data.decode().strip()
 
-    print(f"📦 Respuesta cifrada recibida (raw): '{encrypted_b64}'")
+    print(f"Respuesta cifrada recibida (raw): '{encrypted_b64}'")
 
     decrypted_json = decrypt_aes(encrypted_b64, key, iv)
     return json.loads(decrypted_json)
@@ -257,7 +257,7 @@ class LoginScreen:
             # Recibir y descifrar la respuesta
             response = receive_encrypted_response(client, key, iv)
 
-            print("🔓 Respuesta del servidor:", response)
+            print("Respuesta del servidor:", response)
             self.game.game_user_id = response.get("userId")
 
             print(f"USERID: {self.game.game_user_id}")
@@ -267,4 +267,4 @@ class LoginScreen:
             client.close()
 
         except Exception as e:
-            print(f"⚠️ Error en login: {e}")
+            print(f"Error en login: {e}")
