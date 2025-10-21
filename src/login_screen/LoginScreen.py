@@ -271,9 +271,11 @@ class LoginScreen:
 
             print(f"USERID: {self.game.game_user_id}")
 
+            self.game.client_socket = client
+            self.game.aes_key = key
+            self.game.aes_iv = iv
+            self.game.game_username = self.username
             self.game.set_screen("dashboard")
-
-            client.close()
 
         except Exception as e:
             print(f"Error en login: {e}")
