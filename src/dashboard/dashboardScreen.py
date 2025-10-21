@@ -4,6 +4,9 @@ import math
 import threading
 from login_screen.LoginScreen import send_encrypted_request, receive_encrypted_response
 
+# ============================================
+# CLASE Dashboard
+# ============================================
 class DashboardScreen:
 
     def __init__(self, game):
@@ -95,8 +98,15 @@ class DashboardScreen:
                     "gameId": game_id_to_invite
                 }
             }
-            threading.Thread(target=send_encrypted_request,
-                             args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
+
+            print(target_user)
+            print(game_id_to_invite)
+
+            send_encrypted_request(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)
+
+
+            #threading.Thread(target=send_encrypted_request,
+            #                 args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
             print(f"[Dashboard] Invitation request for {target_username} queued for sending.")
         else:
             print("[Dashboard] Client not connected or keys missing. Cannot send invitation.")
