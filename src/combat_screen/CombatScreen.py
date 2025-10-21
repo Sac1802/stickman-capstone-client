@@ -148,7 +148,7 @@ class CombatScreen:
         player1_rect = self.player1_image.get_rect(topleft=self.player1_pos)
         player2_rect = self.player2_image.get_rect(topleft=self.player2_pos)
 
-        if player1_rect.colliderect(player2_rect):
+        if player1_rect.colliderect(player2_rect) and self.is_attacking:
             print("Collision detected!")
 
     def draw_health_bars(self, screen):
