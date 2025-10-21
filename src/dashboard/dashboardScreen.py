@@ -99,7 +99,7 @@ class DashboardScreen:
                 }
             }
 
-            print(target_user)
+            print(target_username)
             print(game_id_to_invite)
 
             send_encrypted_request(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)
