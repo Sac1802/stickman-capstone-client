@@ -17,7 +17,7 @@ class CombatScreen:
 
         player_skin = os.path.join("static/sprites/sprite_player/", "sprite_07.png")
         self.player_image = pygame.image.load(player_skin).convert_alpha()
-        self.player_image = pygame.transform.scale(self.player_image, (50, 100))
+        self.player_image = pygame.transform.scale(self.player_image, (40, 100))
 
         self.attack_frames = [
             pygame.transform.scale(
