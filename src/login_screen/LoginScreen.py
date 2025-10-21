@@ -182,7 +182,7 @@ class LoginScreen:
                     self.button_sound.play()
                     self.game.set_screen("register")
             elif self.combat_button.collidepoint(event.pos):
-                self.game.set_screen("combat")
+                self.game.set_screen("room")
 
             else:
                 self.active_field = None
