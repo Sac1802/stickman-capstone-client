@@ -13,6 +13,7 @@ class CombatScreen:
 
         nature_5_path = os.path.join("static/sprites/enviroment/nature_5", "orig.png")
         self.background = pygame.image.load(nature_5_path).convert()
+        self.background = pygame.transform.scale(self.background, (800, 500))
 
         player_skin = os.path.join("static/sprites/sprite_player/", "sprite_07.png")
         self.player_image = pygame.image.load(player_skin).convert_alpha()
@@ -147,7 +148,6 @@ class CombatScreen:
     def check_collisions(self):
         player1_rect = self.player1_image.get_rect(topleft=self.player1_pos)
         player2_rect = self.player2_image.get_rect(topleft=self.player2_pos)
-
         if player1_rect.colliderect(player2_rect) and self.is_attacking:
             print("Collision detected!")
 
