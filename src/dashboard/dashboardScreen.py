@@ -81,6 +81,7 @@ class DashboardScreen:
             if user and user != self.game.game_username and user in self.connected_users:
                 self.connected_users.remove(user)
         elif message.get("type") == "GAME_INVITATION":
+            print(message)
             payload = message.get("payload", {})
             inviter_username = payload.get("inviterUsername")
             game_id = payload.get("gameId")
@@ -126,8 +127,8 @@ class DashboardScreen:
             request = {
                 "type": "SEND_INVITATION",
                 "payload": {
-                    "invitedUsername": target_username,
-                    "gameId": str(game_id_to_invite) # CRITICAL: Send as string to prevent client crash
+                    "username": target_username,
+                    "gameId": game_id_to_invite # CRITICAL: Send as string to prevent client crash
                 }
             }
 
