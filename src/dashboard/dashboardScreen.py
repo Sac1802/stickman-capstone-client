@@ -14,8 +14,8 @@ class DashboardScreen:
 
         # UI Elements for Dashboard
         self.user_list_rect = pygame.Rect(50, 100, 300, 300)
-        self.refresh_button = pygame.Rect(50, 420, 150, 40)
-        self.invite_button = pygame.Rect(210, 420, 150, 40)
+        self.refresh_button = pygame.Rect(50, 420, 170, 40)
+        self.invite_button = pygame.Rect(240, 420, 150, 40)
         self.selected_user_index = -1
 
         # New invitation related variables

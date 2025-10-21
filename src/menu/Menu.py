@@ -12,7 +12,7 @@ class Menu:
         self.t = 0 # contador de colores
 
         # Botones
-        self.code_button = pygame.Rect(340, 340, 130, 40)
+        self.code_button = pygame.Rect(50, 120, 150, 40)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -21,12 +21,12 @@ class Menu:
             else:
                 self.active_field = None
 
-        elif event.type == pygame.KEYDOWN:
-            if self.active_field == "code":
-                if event.key == pygame.K_BACKSPACE:
-                    self.code = self.code[:-1]
-                else:
-                    self.code += event.unicode
+       # elif event.type == pygame.KEYDOWN:
+       #     if self.active_field == "code":
+       #         if event.key == pygame.K_BACKSPACE:
+       #             self.code = self.code[:-1]
+       #         else:
+       #             self.code += event.unicode
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             self.game.set_screen("login")
@@ -59,4 +59,4 @@ class Menu:
         pygame.draw.rect(screen, (100,100,200), self.code_button)
 
         # Botones
-        screen.blit(self.font.render("send code", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))
+        screen.blit(self.font.render("Create Room", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))

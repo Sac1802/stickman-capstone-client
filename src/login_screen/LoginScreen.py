@@ -152,6 +152,12 @@ class LoginScreen:
         self.title_img = pygame.image.load(title_path).convert_alpha()
         self.title_img = pygame.transform.scale(self.title_img, (300, 150))
 
+        # soundtrack
+        soundtrack_path = os.path.join("static", "login.mp3")
+        self.soundtrack_music = pygame.mixer.Sound(soundtrack_path)
+        self.soundtrack_music.set_volume(0.2)
+        self.soundtrack_music.play()
+
         # Sonido de boton
         sound_path = os.path.join("static", "button.wav")
         if os.path.exists(sound_path):
@@ -273,6 +279,7 @@ class LoginScreen:
             self.game.game_username = self.username # Store the username
 
             print(f"USERID: {self.game.game_user_id}")
+            self.soundtrack_music.stop()
 
             self.game.set_screen("menu")
 
