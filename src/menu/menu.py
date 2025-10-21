@@ -1,18 +1,18 @@
-import pygame
-import os
-import math
 
-# ============================================
-# CLASE CodeScreen
-# ============================================
-class RoomScreen:
 
-    def __init__(self, game):
+class Menu:
+
+     def __init__(self, game):
         self.game = game
         self.font = pygame.font.Font(None, 32)
         self.code = ""
         self.active_field = None
         self.t = 0 # contador de colores
+
+        # Titulo
+        title_path = os.path.join("static", "title.png")
+        self.title_img = pygame.image.load(title_path).convert_alpha()
+        self.title_img = pygame.transform.scale(self.title_img, (200, 150))
 
         # text field position
         self.input_box_code = pygame.Rect(260, 250, 300, 32)
@@ -37,7 +37,7 @@ class RoomScreen:
                     self.code += event.unicode
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            print("ESC")
+            self.game.set_screen("register")
 
     def update(self):
         pass
@@ -46,6 +46,9 @@ class RoomScreen:
         self.t += 1;
 
         screen.fill((50, 50, 80))
+
+        #Title image
+        screen.blit(self.title_img, (300, 20))
 
         border_thickness = 8
         w, h = screen.get_size()
@@ -62,10 +65,6 @@ class RoomScreen:
         pygame.draw.rect(screen, color, (0, 0, border_thickness, h))          # izquierda
         pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) # derecha
 
-
-        # Regresar a registro
-        screen.blit(self.font.render("Crear Sala", True, color), (50, 120))
-
          # Labels
         screen.blit(self.font.render("Ingresar Codigo", True, (200,200,200)), (320, 210))
 
@@ -81,4 +80,5 @@ class RoomScreen:
         # Botones
         screen.blit(self.font.render("send code", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))
 
-
+        # Regresar a registro
+        screen.blit(self.font.render("Pantalla de validacion de codigo (ESC para volver)", True, color), (50, 440))

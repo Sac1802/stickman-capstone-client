@@ -18,6 +18,10 @@ class DashboardScreen:
         self.invite_button = pygame.Rect(210, 420, 150, 40)
         self.selected_user_index = -1
 
+        # Rooms
+        self.room_button = pygame.Rect(430, 100, 200, 32)
+
+
     def handle_server_message(self, message):
         if "users" in message:
             users = message.get("users", [])
@@ -122,5 +126,9 @@ class DashboardScreen:
         pygame.draw.rect(screen, (100, 200, 100), self.invite_button)
         invite_text = self.font.render("Invite", True, (255, 255, 255))
         screen.blit(invite_text, (self.invite_button.x + 40, self.invite_button.y + 10))
+
+        pygame.draw.rect(screen, (100, 100, 200), self.room_button)
+        room_text = self.font.render("Create Room", True, (255, 255, 255), (430, 100))
+        screen.blit(room_text, (self.refresh_button.x + 10, self.refresh_button.y + 10))
 
         screen.blit(self.font.render("Dashboard", True, color), (50, 50))
