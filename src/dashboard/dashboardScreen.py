@@ -80,7 +80,7 @@ class DashboardScreen:
         pass
 
     def draw(self, screen):
-        self.t += 1
+        self.t += 1;
 
         screen.fill((50, 50, 80))
 
