@@ -4,6 +4,9 @@ import math
 import threading
 from login_screen.LoginScreen import send_encrypted_request, receive_encrypted_response
 
+# ============================================
+# CLASE Dashboard
+# ============================================
 class DashboardScreen:
 
     def __init__(self, game):
@@ -14,8 +17,8 @@ class DashboardScreen:
 
         # UI Elements for Dashboard
         self.user_list_rect = pygame.Rect(50, 100, 300, 300)
-        self.refresh_button = pygame.Rect(50, 420, 150, 40)
-        self.invite_button = pygame.Rect(210, 420, 150, 40)
+        self.refresh_button = pygame.Rect(50, 420, 170, 40)
+        self.invite_button = pygame.Rect(240, 420, 150, 40)
         self.selected_user_index = -1
 
         # New invitation related variables
@@ -30,6 +33,8 @@ class DashboardScreen:
         # New feedback variables for invite button
         self.invite_button_feedback_message = None
         self.invite_button_feedback_timer = 0
+
+
     def handle_server_message(self, message):
         if "users" in message:
             users = message.get("users", [])
@@ -93,8 +98,15 @@ class DashboardScreen:
                     "gameId": game_id_to_invite
                 }
             }
-            threading.Thread(target=send_encrypted_request,
-                             args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
+
+            print(target_user)
+            print(game_id_to_invite)
+
+            send_encrypted_request(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)
+
+
+            #threading.Thread(target=send_encrypted_request,
+            #                 args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
             print(f"[Dashboard] Invitation request for {target_username} queued for sending.")
         else:
             print("[Dashboard] Client not connected or keys missing. Cannot send invitation.")
