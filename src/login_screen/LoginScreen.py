@@ -122,7 +122,7 @@ def receive_encrypted_response(client, key, iv):
             break
     encrypted_b64 = data.decode().strip()
 
-    print(f"Respuesta cifrada recibida (raw): '{encrypted_b64}'")
+    print(f"📦 Respuesta cifrada recibida (raw): '{encrypted_b64}'")
 
     decrypted_json = decrypt_aes(encrypted_b64, key, iv)
     return json.loads(decrypted_json)
@@ -180,10 +180,7 @@ class LoginScreen:
             elif self.register_button.collidepoint(event.pos):
                 if self.button_sound:
                     self.button_sound.play()
-                    self.game.set_screen("register")
-            elif self.combat_button.collidepoint(event.pos):
-                self.game.set_screen("combat")
-
+                self.game.set_screen("register")
             else:
                 self.active_field = None
 
@@ -232,7 +229,6 @@ class LoginScreen:
         pygame.draw.rect(screen, text_color, self.input_box_pass)
         pygame.draw.rect(screen, (100, 100, 200), self.login_button)
         pygame.draw.rect(screen, (100, 100, 200), self.register_button)
-        pygame.draw.rect(screen, (100, 100, 200), self.combat_button)
 
         screen.blit(self.font.render("By Said, Cristian and Leonardo", True, text_color), (220, 430))
         screen.blit(self.font.render(self.username, True, (255, 255, 255)),
@@ -272,7 +268,7 @@ class LoginScreen:
             # Recibir y descifrar la respuesta
             response = receive_encrypted_response(client, key, iv)
 
-            print("Respuesta del servidor:", response)
+            print("🔓 Respuesta del servidor:", response)
             self.game.game_user_id = response.get("userId")
             self.game.game_username = self.username # Store the username
 
@@ -281,4 +277,4 @@ class LoginScreen:
             self.game.set_screen("dashboard")
 
         except Exception as e:
-            print(f"Error en login: {e}")
+            print(f"⚠️ Error en login: {e}")
