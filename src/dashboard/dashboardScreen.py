@@ -94,8 +94,8 @@ class DashboardScreen:
             request = {
                 "type": "SEND_INVITATION",
                 "payload": {
-                    "invitedUsername": target_username,
-                    "gameId": game_id_to_invite
+                    "username": target_username,
+                    "idGame": game_id_to_invite
                 }
             }
 
