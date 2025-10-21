@@ -83,7 +83,7 @@ def connect_to_server(host="127.0.0.1", port=5000, save_keys=True):
 
     if save_keys:
         save_aes_keys(key_b64, iv_b64)
-        print(f" Claves guardadas en aes_keys.json")
+        print(f"Claves guardadas en aes_keys.json")
 
     return client, key_bytes, iv_bytes
 
@@ -122,7 +122,7 @@ def receive_encrypted_response(client, key, iv):
             break
     encrypted_b64 = data.decode().strip()
 
-    print(f"📦 Respuesta cifrada recibida (raw): '{encrypted_b64}'")
+    print(f"Respuesta cifrada recibida (raw): '{encrypted_b64}'")
 
     decrypted_json = decrypt_aes(encrypted_b64, key, iv)
     return json.loads(decrypted_json)
@@ -152,6 +152,12 @@ class LoginScreen:
         self.title_img = pygame.image.load(title_path).convert_alpha()
         self.title_img = pygame.transform.scale(self.title_img, (300, 150))
 
+        # soundtrack
+        soundtrack_path = os.path.join("static", "login.mp3")
+        self.soundtrack_music = pygame.mixer.Sound(soundtrack_path)
+        self.soundtrack_music.set_volume(0.2)
+        self.soundtrack_music.play()
+
         # Sonido de boton
         sound_path = os.path.join("static", "button.wav")
         if os.path.exists(sound_path):
@@ -167,7 +173,7 @@ class LoginScreen:
         # Botones
         self.login_button = pygame.Rect(300, 320, 100, 40)
         self.register_button = pygame.Rect(410, 320, 100, 40)
-        self.combat_button = pygame.Rect(410, 370, 100, 40)
+        # self.combat_button = pygame.Rect(410, 370, 100, 40)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -242,8 +248,8 @@ class LoginScreen:
                     (self.register_button.x + 10, self.register_button.y + 10))
 
         # boton de prueba para said
-        screen.blit(self.font.render("saidfi", True, (0, 0, 0)),
-                    (self.combat_button.x + 20, self.combat_button.y + 10))
+        #screen.blit(self.font.render("saidfi", True, (0, 0, 0)),
+        #            (self.combat_button.x + 20, self.combat_button.y + 10))
 
     def login(self):
         try:
@@ -253,7 +259,7 @@ class LoginScreen:
             iv = self.game.aes_iv
 
             if not client or not key or not iv:
-                print("⚠️ Error: Client socket or AES keys not initialized.")
+                print("Error: Client socket or AES keys not initialized.")
                 return
 
             # Crear el request de login
@@ -268,13 +274,14 @@ class LoginScreen:
             # Recibir y descifrar la respuesta
             response = receive_encrypted_response(client, key, iv)
 
-            print("🔓 Respuesta del servidor:", response)
+            print("Respuesta del servidor:", response)
             self.game.game_user_id = response.get("userId")
             self.game.game_username = self.username # Store the username
 
             print(f"USERID: {self.game.game_user_id}")
+            self.soundtrack_music.stop()
 
-            self.game.set_screen("dashboard")
+            self.game.set_screen("menu")
 
         except Exception as e:
-            print(f"⚠️ Error en login: {e}")
+            print(f"Error en login: {e}")
