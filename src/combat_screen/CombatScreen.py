@@ -142,7 +142,8 @@ class CombatScreen:
                 winner = "You won!" if self.player1_health > 0 else "You Loss!"
                 winnerId = self.playerId if self.player1_health > 0 else self.remotePlayerId
                 print(f"Winner {winnerId}")
-                self.update_user_victories(winnerId)
+                if self.playerId == winnerId:
+                    self.update_user_victories(winnerId)
                 self.game.current_screen = Game_over_screen(self.game, winner)
 
     def update(self):
@@ -237,9 +238,12 @@ class CombatScreen:
 
     def update_user_victories(self, winnerId):
         data_transfer = {
-            "IdPlayer": winnerId,
+            "IdPlayer": self.playerId,
             "eventType": "UPDATE_USER_VIC",
-            "payload": {}
+            "payload": {
+                "idWinn": winnerId
+            }
         }
+        print(data_transfer)
         udp_service.send_message(data_transfer)
 
