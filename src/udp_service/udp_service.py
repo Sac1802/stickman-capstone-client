@@ -18,8 +18,7 @@ def receive_message():
     while running:
         try:
             data, addr = client_socket.recvfrom(4096)
-            decrypted_str = manageAES.decrypt(data)
-            message = json.loads(decrypted_str)
+            message = manageAES.decrypt(data)
             message_queue.append(message)
         except BlockingIOError:
             time.sleep(0.01)

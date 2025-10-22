@@ -71,7 +71,7 @@ class Game:
             "login": LoginScreen(self),
             "register": RegisterScreen(self),
             "code": CodeScreen(self),
-            "combat": CombatScreen(self),
+            "combat": None,
             "dashboard": DashboardScreen(self),
             "menu" : Menu(self),
             "history" : HistoryScreen(self)
@@ -83,6 +83,8 @@ class Game:
             self.tcp_listener_thread = TcpListener(self, self.client_socket, self.aes_key, self.aes_iv, self.message_queue)
             self.tcp_listener_thread.start()
             self.screens["dashboard"].send_get_connected_users_request()
+        if name == "combat" and self.screens["combat"] is None:
+            self.screens["combat"] = CombatScreen(self)
         self.current_screen = self.screens[name]
 
     def run(self):
