@@ -4,6 +4,7 @@ import json
 import os
 from encryptAES import manageAES
 from udp_service import udp_service
+from game_over_screen.game_over_screen import Game_over_screen
 
 
 class CombatScreen:
@@ -40,6 +41,7 @@ class CombatScreen:
         self.is_attacking = False
         self.attack_frame_index = 0
         self.attack_animation_speed = 0.2
+        self.remotePlayerId = None
 
         self.player1_pos = pygame.Vector2(200, 380)
         self.player2_pos = pygame.Vector2(600, 380)
@@ -70,7 +72,6 @@ class CombatScreen:
         self.send_udp_registration()
 
     def send_udp_registration(self):
-        """Sends an initial UDP packet to register the player with the server."""
         try:
             registration_data = {
                 "eventType": "PLAYER_REGISTER",
@@ -99,7 +100,6 @@ class CombatScreen:
                 if not self.is_attacking:
                     self.is_attacking = True
                     self.attack_frame_index = 0
-                    self.send_attack()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -117,6 +117,7 @@ class CombatScreen:
         if event_type == "PLAYER_MOVE":
             payload = server_data.get("payload", {})
             if server_data.get("IdPlayer") != self.playerId:
+                self.remotePlayerId = server_data.get("IdPlayer")
                 self.player2_pos.x = payload.get("x")
                 self.player2_pos.y = payload.get("y")
                 self.player2_direction = payload.get("direction")
@@ -138,7 +139,12 @@ class CombatScreen:
 
             if is_game_over:
                 print("¡Juego terminado!")
-                self.game.set_screen("login")
+                winner = "You won!" if self.player1_health > 0 else "You Loss!"
+                winnerId = self.playerId if self.player1_health > 0 else self.remotePlayerId
+                print(f"Winner {winnerId}")
+                if self.playerId == winnerId:
+                    self.update_user_victories(winnerId)
+                self.game.current_screen = Game_over_screen(self.game, winner)
 
     def update(self):
         self.process_server_messages()
@@ -174,6 +180,7 @@ class CombatScreen:
         player1_rect = self.player1_image.get_rect(topleft=self.player1_pos)
         player2_rect = self.player2_image.get_rect(topleft=self.player2_pos)
         if player1_rect.colliderect(player2_rect) and self.is_attacking:
+            self.send_attack()
             print("Collision detected!")
 
     def draw_health_bars(self, screen):
@@ -228,3 +235,15 @@ class CombatScreen:
             "payload": {}
         }
         udp_service.send_message(data_transfer)
+
+    def update_user_victories(self, winnerId):
+        data_transfer = {
+            "IdPlayer": self.playerId,
+            "eventType": "UPDATE_USER_VIC",
+            "payload": {
+                "idWinn": winnerId
+            }
+        }
+        print(data_transfer)
+        udp_service.send_message(data_transfer)
+
