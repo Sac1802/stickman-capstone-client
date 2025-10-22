@@ -12,10 +12,10 @@ class CombatScreen:
         self.font = pygame.font.Font(None, 32)
 
         request = {
-            "type": "PLAYER_JOIN_UDP"
+            "eventType": "PLAYER_JOIN_UDP",
+            "IdPlayer": self.game.game_user_id
         }
         udp_service.send_message(request)
-        
         nature_5_path = os.path.join("static/sprites/enviroment/nature_5", "orig.png")
         self.background = pygame.image.load(nature_5_path).convert()
         self.background = pygame.transform.scale(self.background, (800, 500))
