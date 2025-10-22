@@ -4,6 +4,7 @@ import json
 import os
 from encryptAES import manageAES
 from udp_service import udp_service
+from game_over_screen.game_over_screen import Game_over_screen
 
 
 class CombatScreen:
@@ -70,7 +71,6 @@ class CombatScreen:
         self.send_udp_registration()
 
     def send_udp_registration(self):
-        """Sends an initial UDP packet to register the player with the server."""
         try:
             registration_data = {
                 "eventType": "PLAYER_REGISTER",
@@ -99,7 +99,6 @@ class CombatScreen:
                 if not self.is_attacking:
                     self.is_attacking = True
                     self.attack_frame_index = 0
-                    self.send_attack()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -133,12 +132,15 @@ class CombatScreen:
 
             if target_id == self.playerId:
                 self.player1_health = new_health
+                playerId1 = self.playerId
             else:
                 self.player2_health = new_health
+                playerId2 = self.playerId
 
             if is_game_over:
                 print("¡Juego terminado!")
-                self.game.set_screen("login")
+                winner = "You won!" if self.player1_health > 0 else "You Loss!"
+                self.game.current_screen = Game_over_screen(self.game, winner)
 
     def update(self):
         self.process_server_messages()
@@ -174,6 +176,7 @@ class CombatScreen:
         player1_rect = self.player1_image.get_rect(topleft=self.player1_pos)
         player2_rect = self.player2_image.get_rect(topleft=self.player2_pos)
         if player1_rect.colliderect(player2_rect) and self.is_attacking:
+            self.send_attack()
             print("Collision detected!")
 
     def draw_health_bars(self, screen):
