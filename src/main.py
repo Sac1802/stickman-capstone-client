@@ -38,7 +38,7 @@ class Game:
         self.aes_key = None
         self.aes_iv = None
         self.tcp_listener_thread = None
-        self.message_queue = queue.Queue() # Initialize the message queue
+        self.message_queue = queue.Queue() 
 
         # Establish persistent TCP connection and receive AES keys
         try:
@@ -65,7 +65,7 @@ class Game:
 
         except Exception as e:
             print(f"Error establishing initial connection or receiving keys: {e}")
-            self.running = False # Stop game if connection fails
+            self.running = False 
 
         self.screens = {
             "login": LoginScreen(self),
@@ -82,13 +82,11 @@ class Game:
         if name == "dashboard" and self.tcp_listener_thread is None:
             self.tcp_listener_thread = TcpListener(self, self.client_socket, self.aes_key, self.aes_iv, self.message_queue)
             self.tcp_listener_thread.start()
-            # Send initial GET_CONNECTED_USERS request after listener starts
             self.screens["dashboard"].send_get_connected_users_request()
         self.current_screen = self.screens[name]
 
     def run(self):
         while self.running:
-            # Process messages from the queue in the main thread
             while not self.message_queue.empty():
                 message = self.message_queue.get()
                 if self.current_screen and hasattr(self.current_screen, 'handle_server_message'):

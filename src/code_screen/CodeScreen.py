@@ -62,19 +62,15 @@ def connect_to_server(host="127.0.0.1", port=5000, save_keys=True):
     client.connect((host, port))
     print("Conectado al servidor TCP.")
 
-    # Recibir mensaje inicial "key:iv"
     raw_data = client.recv(4096).decode().strip()
     print(f" Datos recibidos del servidor: {raw_data}")
 
-    # Limpiar escapes si vienen de JSON (\u003d)
     clean_data = raw_data.replace("\\u003d", "=").replace('"', "")
     key_b64, iv_b64 = [x.strip() for x in clean_data.split(":")]
 
-    # Corregir padding si falta
     key_b64 = fix_base64_padding(key_b64)
     iv_b64 = fix_base64_padding(iv_b64)
 
-    # Decodificar desde base64
     key_bytes = base64.b64decode(key_b64)
     iv_bytes = base64.b64decode(iv_b64)
 
@@ -183,17 +179,15 @@ class CodeScreen:
         border_thickness = 8
         w, h = screen.get_size()
 
-        # Generar color animado tipo arcoiris
         r = int(128 + 127 * math.sin(self.t * 0.05))
         g = int(128 + 127 * math.sin(self.t * 0.05 + 2))
         b = int(128 + 127 * math.sin(self.t * 0.05 + 4))
         color = (r, g, b)
 
-         # Dibujar rectángulos de borde
-        pygame.draw.rect(screen, color, (0, 0, w, border_thickness))          # arriba
-        pygame.draw.rect(screen, color, (0, h-border_thickness, w, border_thickness)) # abajo
-        pygame.draw.rect(screen, color, (0, 0, border_thickness, h))          # izquierda
-        pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) # derecha
+        pygame.draw.rect(screen, color, (0, 0, w, border_thickness))         
+        pygame.draw.rect(screen, color, (0, h-border_thickness, w, border_thickness)) 
+        pygame.draw.rect(screen, color, (0, 0, border_thickness, h))    
+        pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) 
 
          # Labels
         screen.blit(self.font.render("Ingresar Codigo", True, (200,200,200)), (320, 210))

@@ -212,7 +212,6 @@ class LoginScreen:
         w, h = screen.get_size()
         border_thickness = 8
 
-        # Animación arcoíris del borde
         r = max(0, min(255, int(128 + 127 * math.sin(self.t * 0.05))))
         g = max(0, min(255, int(128 + 127 * math.sin(self.t * 0.05 + 2))))
         b = max(0, min(255, int(128 + 127 * math.sin(self.t * 0.05 + 4))))
@@ -247,13 +246,9 @@ class LoginScreen:
         screen.blit(self.font.render("Register", True, (0, 0, 0)),
                     (self.register_button.x + 10, self.register_button.y + 10))
 
-        # boton de prueba para said
-        #screen.blit(self.font.render("saidfi", True, (0, 0, 0)),
-        #            (self.combat_button.x + 20, self.combat_button.y + 10))
 
     def login(self):
         try:
-            # Use persistent connection from game object
             client = self.game.client_socket
             key = self.game.aes_key
             iv = self.game.aes_iv
@@ -262,21 +257,18 @@ class LoginScreen:
                 print("Error: Client socket or AES keys not initialized.")
                 return
 
-            # Crear el request de login
             request = {
                 "type": "login",
                 "payload": {"username": self.username, "password": self.password}
             }
 
-            # Enviar la solicitud cifrada
             send_encrypted_request(client, request, key, iv)
 
-            # Recibir y descifrar la respuesta
             response = receive_encrypted_response(client, key, iv)
 
             print("Respuesta del servidor:", response)
             self.game.game_user_id = response.get("userId")
-            self.game.game_username = self.username # Store the username
+            self.game.game_username = self.username 
 
             print(f"USERID: {self.game.game_user_id}")
             self.soundtrack_music.stop()

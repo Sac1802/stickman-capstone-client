@@ -9,9 +9,8 @@ class Menu:
         self.font = pygame.font.Font(None, 32)
         self.code = ""
         self.active_field = None
-        self.t = 0 # contador de colores
+        self.t = 0
 
-        # Botones
         self.code_button = pygame.Rect(50, 120, 150, 40)
         self.history_button = pygame.Rect(230, 120, 170, 40)
 
@@ -32,30 +31,27 @@ class Menu:
         pass
 
     def draw(self, screen):
-        self.t += 1;
+        self.t += 1
         screen.fill((50, 50, 80))
 
         border_thickness = 8
         w, h = screen.get_size()
 
-        # Generar color animado tipo arcoiris
         r = int(128 + 127 * math.sin(self.t * 0.05))
         g = int(128 + 127 * math.sin(self.t * 0.05 + 2))
         b = int(128 + 127 * math.sin(self.t * 0.05 + 4))
         color = (r, g, b)
 
-        # Dibujar rectángulos de borde
-        pygame.draw.rect(screen, color, (0, 0, w, border_thickness))          # arriba
-        pygame.draw.rect(screen, color, (0, h-border_thickness, w, border_thickness)) # abajo
-        pygame.draw.rect(screen, color, (0, 0, border_thickness, h))          # izquierda
-        pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) # derecha
+        pygame.draw.rect(screen, color, (0, 0, w, border_thickness))      
+        pygame.draw.rect(screen, color, (0, h-border_thickness, w, border_thickness)) 
+        pygame.draw.rect(screen, color, (0, 0, border_thickness, h))       
+        pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) 
 
         screen.blit(self.font.render("MENU", True, color), (50, 60))
 
-        # Boton
+
         pygame.draw.rect(screen, (100,100,200), self.code_button)
         pygame.draw.rect(screen, (100,100,200), self.history_button)
 
-        # Botones
         screen.blit(self.font.render("Create Room", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))
         screen.blit(self.font.render("match history", True, (255,255,122)), (self.history_button.x+10, self.history_button.y+10))

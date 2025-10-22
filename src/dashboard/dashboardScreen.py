@@ -22,7 +22,7 @@ class DashboardScreen:
         self.selected_user_index = -1
 
         # New invitation related variables
-        self.pending_invitation = None # Stores {'inviter_username': '...', 'gameId': '...'}
+        self.pending_invitation = None 
         self.invitation_response_message = None
         self.invitation_timer = 0
 
@@ -50,70 +50,76 @@ class DashboardScreen:
             print("[Dashboard] Client not connected or keys missing. Cannot create game.")
 
     def handle_server_message(self, message):
-        # Handle create_game response
+
         if message.get("message", "").startswith("Game created:"):
             try:
-                # Extract gameId from a message like "Game created: 123"
                 game_id_str = message["message"].split(":")[1].strip()
                 game_id = int(game_id_str)
                 self.game.current_game_id = game_id
                 print(f"[Dashboard] Game created with ID: {game_id}")
 
-                # If an invitation was pending, send it now
                 if self.pending_invitation_for_user:
                     print(f"[Dashboard] Proceeding with pending invitation for {self.pending_invitation_for_user}")
                     self.send_invite_request(self.pending_invitation_for_user)
-                    self.pending_invitation_for_user = None # Clear pending state
+                    self.pending_invitation_for_user = None 
 
             except (ValueError, IndexError) as e:
                 print(f"[Dashboard] Error parsing gameId from message: {message}, error: {e}")
 
         elif "users" in message:
             users = message.get("users", [])
-            # Filter out the current user by username
             self.connected_users = [user for user in users if user != self.game.game_username]
+        
         elif message.get("type") == "USER_CONNECTED":
             user = message.get("payload", {}).get("username")
+            
             if user and user != self.game.game_username and user not in self.connected_users:
                 self.connected_users.append(user)
+        
         elif message.get("type") == "USER_DISCONNECTED":
             user = message.get("payload", {}).get("username")
+            
             if user and user != self.game.game_username and user in self.connected_users:
                 self.connected_users.remove(user)
+        
         elif message.get("notificationType") == "GAME_INVITATION":
             payload = message.get("payload", {})
             inviter_username = payload.get("inviterUsername")
             game_id = payload.get("gameId")
+            
             if inviter_username and game_id is not None:
                 self.pending_invitation = {'inviter_username': inviter_username, 'gameId': game_id}
                 print(f"Received game invitation from {inviter_username} for game {game_id}")
+        
         elif message.get("notificationType") == "INVITATION_ACCEPTED":
             payload = message.get("payload", {})
             accepted_by = payload.get("acceptedBy")
             game_id = payload.get("gameId")
+           
             if accepted_by and game_id:
                 self.invitation_response_message = f"Invitation to {accepted_by} for game {game_id} accepted!"
-                self.invitation_timer = 180 # Display for 3 seconds (30 FPS * 3 seconds)
+                self.invitation_timer = 180 
                 print(self.invitation_response_message)
-                # Optionally, transition to game screen or update game state
-                self.game.current_game_id = game_id # Set current game ID
-                self.game.set_screen("combat") # Example: move to combat screen
+                self.game.current_game_id = game_id 
+                self.game.set_screen("combat") 
+        
         elif message.get("notificationType") == "INVITATION_DENIED":
             payload = message.get("payload", {})
             denied_by = payload.get("deniedBy")
             game_id = payload.get("gameId")
+          
             if denied_by and game_id:
                 self.invitation_response_message = f"Invitation to {denied_by} for game {game_id} denied."
-                self.invitation_timer = 180 # Display for 3 seconds
+                self.invitation_timer = 180 
                 print(self.invitation_response_message)
 
     def send_get_connected_users_request(self):
+        
         if self.game.client_socket and self.game.aes_key and self.game.aes_iv:
             request = {
                 "type": "get_online_users",
                 "payload": {}
             }
-            # Send in a new thread to avoid blocking the UI
             threading.Thread(target=send_encrypted_request,
                              args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
         else:
@@ -136,8 +142,6 @@ class DashboardScreen:
 
             send_encrypted_request(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)
 
-            #threading.Thread(target=send_encrypted_request,
-            #                 args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
             print(f"[Dashboard] Invitation request for {target_username} queued for sending.")
         else:
             print("[Dashboard] Client not connected or keys missing. Cannot send invitation.")
@@ -153,7 +157,7 @@ class DashboardScreen:
             }
             threading.Thread(target=send_encrypted_request,
                              args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
-            self.pending_invitation = None # Clear the pending invitation after sending response
+            self.pending_invitation = None 
         else:
             print("[Dashboard] Cannot accept invitation: Client not connected, keys missing, or no pending invitation.")
 
@@ -168,25 +172,24 @@ class DashboardScreen:
             }
             threading.Thread(target=send_encrypted_request,
                              args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
-            self.pending_invitation = None # Clear the pending invitation after sending response
+            self.pending_invitation = None 
         else:
             print("[Dashboard] Cannot deny invitation: Client not connected, keys missing, or no pending invitation.")
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.pending_invitation: # If there's a pending invitation, handle its buttons
+            if self.pending_invitation: 
                 if self.accept_button_rect.collidepoint(event.pos):
                     self.send_accept_invitation_request()
                 elif self.decline_button_rect.collidepoint(event.pos):
                     self.send_deny_invitation_request()
-            else: # Otherwise, handle regular dashboard buttons
+            else: 
                 if self.refresh_button.collidepoint(event.pos):
                     self.send_get_connected_users_request()
                 elif self.invite_button.collidepoint(event.pos):
                     if self.selected_user_index != -1 and self.selected_user_index < len(self.connected_users):
                         target_user = self.connected_users[self.selected_user_index]
                         print(f"[Dashboard] Invite button clicked for {target_user}. Initiating game creation...")
-                        # Set pending state and create a game. The response will trigger the invitation.
                         self.pending_invitation_for_user = target_user
                         self.send_create_game_request()
 
@@ -197,28 +200,26 @@ class DashboardScreen:
                         self.invite_button_feedback_message = "Please select a user to invite."
                         self.invite_button_feedback_timer = 90
                 elif self.user_list_rect.collidepoint(event.pos):
-                    # Handle user selection from the list
                     mouse_y = event.pos[1]
-                    item_height = 30 # Assuming each user item is 30 pixels high
+                    item_height = 30 
                     relative_y = mouse_y - self.user_list_rect.y
                     self.selected_user_index = relative_y // item_height
                     if self.selected_user_index >= len(self.connected_users):
-                        self.selected_user_index = -1 # Deselect if clicked outside valid user
+                        self.selected_user_index = -1 
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            # Optionally go back to login or exit
             self.game.set_screen("login")
 
     def update(self):
         if self.invitation_timer > 0:
             self.invitation_timer -= 1
             if self.invitation_timer == 0:
-                self.invitation_response_message = None # Clear message when timer runs out
+                self.invitation_response_message = None 
 
         if self.invite_button_feedback_timer > 0:
             self.invite_button_feedback_timer -= 1
             if self.invite_button_feedback_timer == 0:
-                self.invite_button_feedback_message = None # Clear message when timer runs out
+                self.invite_button_feedback_message = None 
 
     def draw(self, screen):
         self.t += 1
@@ -228,17 +229,15 @@ class DashboardScreen:
         border_thickness = 8
         w, h = screen.get_size()
 
-        # Generar color animado tipo arcoiris
         r = int(128 + 127 * math.sin(self.t * 0.05))
         g = int(128 + 127 * math.sin(self.t * 0.05 + 2))
         b = int(128 + 127 * math.sin(self.t * 0.05 + 4))
         color = (r, g, b)
 
-         # Dibujar rectángulos de borde
-        pygame.draw.rect(screen, color, (0, 0, w, border_thickness))          # arriba
-        pygame.draw.rect(screen, color, (0, h-border_thickness, w, border_thickness)) # abajo
-        pygame.draw.rect(screen, color, (0, 0, border_thickness, h))          # izquierda
-        pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) # derecha
+        pygame.draw.rect(screen, color, (0, 0, w, border_thickness)) 
+        pygame.draw.rect(screen, color, (0, h-border_thickness, w, border_thickness)) 
+        pygame.draw.rect(screen, color, (0, 0, border_thickness, h))
+        pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) 
 
         # Draw user list background
         pygame.draw.rect(screen, (30, 30, 30), self.user_list_rect)
@@ -267,7 +266,7 @@ class DashboardScreen:
         # Draw invite button feedback message
         if self.invite_button_feedback_message:
             feedback_text = self.font.render(self.invite_button_feedback_message, True, (255, 255, 0))
-            screen.blit(feedback_text, (self.invite_button.x, self.invite_button.y - 30)) # Above the button
+            screen.blit(feedback_text, (self.invite_button.x, self.invite_button.y - 30)) 
 
         # Draw pending invitation prompt
         if self.pending_invitation:
