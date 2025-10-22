@@ -70,7 +70,6 @@ class CombatScreen:
         self.send_udp_registration()
 
     def send_udp_registration(self):
-        """Sends an initial UDP packet to register the player with the server."""
         try:
             registration_data = {
                 "eventType": "PLAYER_REGISTER",
@@ -99,7 +98,6 @@ class CombatScreen:
                 if not self.is_attacking:
                     self.is_attacking = True
                     self.attack_frame_index = 0
-                    self.send_attack()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -174,6 +172,7 @@ class CombatScreen:
         player1_rect = self.player1_image.get_rect(topleft=self.player1_pos)
         player2_rect = self.player2_image.get_rect(topleft=self.player2_pos)
         if player1_rect.colliderect(player2_rect) and self.is_attacking:
+            self.send_attack()
             print("Collision detected!")
 
     def draw_health_bars(self, screen):
