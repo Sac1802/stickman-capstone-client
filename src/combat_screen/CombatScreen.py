@@ -4,6 +4,7 @@ import json
 import os
 from encryptAES import manageAES
 from udp_service import udp_service
+from game_over_screen.game_over_screen import Game_over_screen
 
 
 class CombatScreen:
@@ -131,12 +132,15 @@ class CombatScreen:
 
             if target_id == self.playerId:
                 self.player1_health = new_health
+                playerId1 = self.playerId
             else:
                 self.player2_health = new_health
+                playerId2 = self.playerId
 
             if is_game_over:
                 print("¡Juego terminado!")
-                self.game.set_screen("login")
+                winner = "You won!" if self.player1_health > 0 else "You Loss!"
+                self.game.current_screen = Game_over_screen(self.game, winner)
 
     def update(self):
         self.process_server_messages()
