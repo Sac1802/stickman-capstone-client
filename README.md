@@ -16,7 +16,7 @@ This is the client application for the Stickman Capstone project. It provides a 
 Before running the client, ensure you have the following:
 
 *   **Python:** A Python installation on your system.
-*   **Game Server:** The corresponding game server must be running and accessible at `127.0.0.1:5000` (for TCP) and `127.0.0.1:9876` (for UDP). The server is responsible for providing the necessary AES encryption keys upon connection.
+*   **Game Server:** The corresponding game server must be running and accessible at `136.112.137.217:5000` (for TCP) and `136.112.137.217:9876` (for UDP). The server is responsible for providing the necessary AES encryption keys upon connection.
 
 ## Setup and Installation
 
