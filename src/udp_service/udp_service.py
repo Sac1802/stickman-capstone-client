@@ -12,22 +12,24 @@ client_socket.setblocking(False)
 client_socket.bind(("", 0))
 
 message_queue = []
+running = True
 
 def receive_message():
-    while True:
+    while running:
         try:
-            data, addr = client_socket.recvfrom(1024)
+            data, addr = client_socket.recvfrom(4096)
             decrypted_str = manageAES.decrypt(data)
             message = json.loads(decrypted_str)
             message_queue.append(message)
         except BlockingIOError:
             time.sleep(0.01)
         except socket.error as e:
-            if e.winerror == 10022:
-                print("Error de socket: Argumento no válido. El servidor puede haberse cerrado o hay un problema de red.")
+            if hasattr(e, "winerror") and e.winerror == 10022:
+                print("Error de socket: argumento no válido. El servidor puede haberse cerrado o hay un problema de red.")
                 time.sleep(1)
             else:
-                print(f"Error de socket no manejado: {e}")
+                print(f"Socket error: {e}")
+                time.sleep(0.5)
         except Exception as e:
             print(f"Error receiving or decrypting: {e}")
             pass
@@ -41,17 +43,13 @@ def get_message():
 
 def send_message(message_to_send):
     try:
-        # If the message is a dictionary, convert it to a JSON string
-        if isinstance(message_to_send, dict):
-            message_str = json.dumps(message_to_send)
-        else:
-            message_str = message_to_send
-
-        encrypted = manageAES.encrypt(message_str)
-        client_socket.sendto(encrypted, (SERVER_ADDRESS, SERVER_PORT))
+        encrypted = manageAES.encrypt(message_to_send)
+        client_socket.sendto(encrypted.encode("utf-8"), (SERVER_ADDRESS, SERVER_PORT))
     except Exception as e:
-        print(f"Error Sending: {e}")
+        print(f"[ERROR] Sending message failed: {e.__class__.__name__} - {e}")
 
 def close_socket():
+    global running
+    running = False
     client_socket.close()
-    print("Socket Close")
+    print("Socket closed")
