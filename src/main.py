@@ -5,6 +5,7 @@ from combat_screen.CombatScreen import CombatScreen
 from code_screen.CodeScreen import CodeScreen
 from dashboard.dashboardScreen import DashboardScreen
 from menu.Menu import Menu
+from history.HistoryScreen import HistoryScreen
 from tcp_listener import TcpListener
 
 import pygame
@@ -73,7 +74,7 @@ class Game:
             "combat": CombatScreen(self),
             "dashboard": DashboardScreen(self),
             "menu" : Menu(self),
-            "history" : historyScreen(self)
+            "history" : HistoryScreen(self)
         }
         self.current_screen = self.screens["login"]
 

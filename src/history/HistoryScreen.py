@@ -2,7 +2,7 @@ import pygame
 import os
 import math
 
-class Menu:
+class HistoryScreen:
 
     def __init__(self, game):
         self.game = game
@@ -12,8 +12,8 @@ class Menu:
         self.t = 0 # contador de colores
 
         # Botones
-       # self.code_button = pygame.Rect(50, 120, 150, 40)
-        #self.history_button = pygame.Rect(230, 120, 170, 40)
+        # self.code_button = pygame.Rect(50, 120, 150, 40)
+        # self.history_button = pygame.Rect(230, 120, 170, 40)
 
 
     def handle_event(self, event):
