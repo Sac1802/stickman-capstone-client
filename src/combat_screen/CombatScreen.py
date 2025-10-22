@@ -41,6 +41,7 @@ class CombatScreen:
         self.is_attacking = False
         self.attack_frame_index = 0
         self.attack_animation_speed = 0.2
+        self.remotePlayerId = None
 
         self.player1_pos = pygame.Vector2(200, 380)
         self.player2_pos = pygame.Vector2(600, 380)
@@ -116,6 +117,7 @@ class CombatScreen:
         if event_type == "PLAYER_MOVE":
             payload = server_data.get("payload", {})
             if server_data.get("IdPlayer") != self.playerId:
+                self.remotePlayerId = server_data.get("IdPlayer")
                 self.player2_pos.x = payload.get("x")
                 self.player2_pos.y = payload.get("y")
                 self.player2_direction = payload.get("direction")
@@ -132,14 +134,14 @@ class CombatScreen:
 
             if target_id == self.playerId:
                 self.player1_health = new_health
-                playerId1 = self.playerId
             else:
                 self.player2_health = new_health
-                playerId2 = self.playerId
 
             if is_game_over:
                 print("¡Juego terminado!")
                 winner = "You won!" if self.player1_health > 0 else "You Loss!"
+                winnerId = self.playerId if self.player1_health > 0 else self.remotePlayerId
+                print(f"Winner {winnerId}")
                 self.game.current_screen = Game_over_screen(self.game, winner)
 
     def update(self):
