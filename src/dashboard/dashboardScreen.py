@@ -121,13 +121,13 @@ class DashboardScreen:
 
     def send_invite_request(self, target_username):
         if self.game.client_socket and self.game.aes_key and self.game.aes_iv:
-            game_id_to_invite = self.game.current_game_id if hasattr(self.game, 'current_game_id') else 1 # Fallback, should be set by create_game
+            game_id_to_invite = self.game.current_game_id if hasattr(self.game, 'current_game_id') else 1 
 
             request = {
                 "type": "SEND_INVITATION",
                 "payload": {
                     "username": target_username,
-                    "gameId": game_id_to_invite # CRITICAL: Send as string to prevent client crash
+                    "gameId": game_id_to_invite 
                 }
             }
 
