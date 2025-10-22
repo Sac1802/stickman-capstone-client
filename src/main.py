@@ -42,7 +42,7 @@ class Game:
 
         # Establish persistent TCP connection and receive AES keys
         try:
-            host = "127.0.0.1"
+            host = "136.112.137.217"
             port = 5000
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.client_socket.connect((host, port))

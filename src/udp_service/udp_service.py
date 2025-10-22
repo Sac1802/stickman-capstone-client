@@ -4,7 +4,7 @@ import time
 import json
 from encryptAES import manageAES
 
-SERVER_ADDRESS = "127.0.0.1"
+SERVER_ADDRESS = "136.112.137.217"
 SERVER_PORT = 9876
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

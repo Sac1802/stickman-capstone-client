@@ -46,7 +46,7 @@ def load_aes_keys(path=KEY_FILE):
 #  Conexión con servidor
 # -------------------------------
 
-def connect_to_server(host="127.0.0.1", port=5000, save_keys=True):
+def connect_to_server(host="136.112.137.217", port=5000, save_keys=True):
     import base64
     import socket
 
