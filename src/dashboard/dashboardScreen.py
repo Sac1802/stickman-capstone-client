@@ -104,7 +104,6 @@ class DashboardScreen:
 
             send_encrypted_request(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)
 
-
             #threading.Thread(target=send_encrypted_request,
             #                 args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
             print(f"[Dashboard] Invitation request for {target_username} queued for sending.")
