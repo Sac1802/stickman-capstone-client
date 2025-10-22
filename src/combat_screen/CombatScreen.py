@@ -231,3 +231,6 @@ class CombatScreen:
             "payload": {}
         }
         udp_service.send_message(data_transfer)
+
+    def update_user_victories(self):
+
