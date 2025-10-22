@@ -98,7 +98,7 @@ class DashboardScreen:
                 # Optionally, transition to game screen or update game state
                 self.game.current_game_id = game_id # Set current game ID
                 self.game.set_screen("combat") # Example: move to combat screen
-        elif message.get("type") == "INVITATION_DENIED":
+        elif message.get("notificationType") == "INVITATION_DENIED":
             payload = message.get("payload", {})
             denied_by = payload.get("deniedBy")
             game_id = payload.get("gameId")
@@ -163,8 +163,8 @@ class DashboardScreen:
             request = {
                 "type": "DENY_INVITATION",
                 "payload": {
-                    "gameId": self.pending_invitation['gameId'],
-                    "inviterUsername": self.pending_invitation['inviter_username']
+                    "username": self.pending_invitation['inviter_username'],
+                    "idGame": self.pending_invitation['gameId']
                 }
             }
             threading.Thread(target=send_encrypted_request,
@@ -192,7 +192,7 @@ class DashboardScreen:
                         self.send_create_game_request()
 
                         self.invite_button_feedback_message = f"Creating game to invite {target_user}..."
-                        self.invite_button_feedback_timer = 90 # Display for 1.5 seconds (30 FPS * 1.5)
+                        self.invite_button_feedback_timer = 90 
                     else:
                         print("[Dashboard] Invite button clicked, but no user selected or invalid selection.")
                         self.invite_button_feedback_message = "Please select a user to invite."
