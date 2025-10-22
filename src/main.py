@@ -72,7 +72,8 @@ class Game:
             "code": CodeScreen(self),
             "combat": CombatScreen(self),
             "dashboard": DashboardScreen(self),
-            "menu" : Menu(self)
+            "menu" : Menu(self),
+            "history" : historyScreen(self)
         }
         self.current_screen = self.screens["login"]
 

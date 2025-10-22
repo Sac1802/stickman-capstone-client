@@ -12,21 +12,22 @@ class Menu:
         self.t = 0 # contador de colores
 
         # Botones
-        self.code_button = pygame.Rect(50, 120, 150, 40)
-        self.history_button = pygame.Rect(230, 120, 170, 40)
+       # self.code_button = pygame.Rect(50, 120, 150, 40)
+        #self.history_button = pygame.Rect(230, 120, 170, 40)
 
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.code_button.collidepoint(event.pos):
-                self.game.set_screen("dashboard")
-            elif self.history_button.collidepoint(event.pos):
-                self.game.set_screen("history")
-            else:
-                self.active_field = None
+            print("wq")
+         #   if self.code_button.collidepoint(event.pos):
+         #       print("weqe")
+         #   elif self.history_button.collidepoint(event.pos):
+         #       print("wwww")
+         #   else:
+         #       self.active_field = None
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            self.game.set_screen("login")
+            self.game.set_screen("menu")
 
     def update(self):
         pass
@@ -50,12 +51,12 @@ class Menu:
         pygame.draw.rect(screen, color, (0, 0, border_thickness, h))          # izquierda
         pygame.draw.rect(screen, color, (w-border_thickness, 0, border_thickness, h)) # derecha
 
-        screen.blit(self.font.render("MENU", True, color), (50, 60))
+        screen.blit(self.font.render("History", True, color), (50, 60))
 
         # Boton
-        pygame.draw.rect(screen, (100,100,200), self.code_button)
-        pygame.draw.rect(screen, (100,100,200), self.history_button)
+        # pygame.draw.rect(screen, (100,100,200), self.code_button)
+        # pygame.draw.rect(screen, (100,100,200), self.history_button)
 
         # Botones
-        screen.blit(self.font.render("Create Room", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))
-        screen.blit(self.font.render("match history", True, (255,255,122)), (self.history_button.x+10, self.history_button.y+10))
+        #    screen.blit(self.font.render("Create Room", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))
+        #  screen.blit(self.font.render("match history", True, (255,255,122)), (self.history_button.x+10, self.history_button.y+10))

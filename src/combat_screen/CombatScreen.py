@@ -61,6 +61,21 @@ class CombatScreen:
 
         self.player2_direction = 'left'
 
+        self.send_udp_registration()
+
+    def send_udp_registration(self):
+        """Sends an initial UDP packet to register the player with the server."""
+        try:
+            registration_data = {
+                "eventType": "PLAYER_REGISTER",
+                "idGame": self.game.current_game_id,
+                "idPlayer": self.game.game_user_id
+            }
+            udp_service.send_message(registration_data)
+            print(f"[CombatScreen] Sent UDP registration for game {self.game.current_game_id} and user {self.game.game_user_id}")
+        except Exception as e:
+            print(f"[CombatScreen] Error sending UDP registration: {e}")
+
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:

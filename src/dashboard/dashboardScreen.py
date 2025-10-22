@@ -87,7 +87,7 @@ class DashboardScreen:
             if inviter_username and game_id is not None:
                 self.pending_invitation = {'inviter_username': inviter_username, 'gameId': game_id}
                 print(f"Received game invitation from {inviter_username} for game {game_id}")
-        elif message.get("type") == "INVITATION_ACCEPTED":
+        elif message.get("notificationType") == "INVITATION_ACCEPTED":
             payload = message.get("payload", {})
             accepted_by = payload.get("acceptedBy")
             game_id = payload.get("gameId")
@@ -147,8 +147,8 @@ class DashboardScreen:
             request = {
                 "type": "ACCEPT_INVITATION",
                 "payload": {
-                    "gameId": self.pending_invitation['gameId'],
-                    "inviterUsername": self.pending_invitation['inviter_username']
+                    "username": self.pending_invitation['inviter_username'],
+                    "idGame": self.pending_invitation['gameId']
                 }
             }
             threading.Thread(target=send_encrypted_request,
