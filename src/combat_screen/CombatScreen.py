@@ -35,11 +35,15 @@ class CombatScreen:
         self.attack_frame_index = 0
         self.attack_animation_speed = 0.2
 
-        self.player1_pos = pygame.Vector2(200, 300)
-        self.player2_pos = pygame.Vector2(600, 300)
+        self.player1_pos = pygame.Vector2(200, 380)
+        self.player2_pos = pygame.Vector2(600, 380)
 
         self.player1_image = self.player_image
         self.player2_image = pygame.transform.flip(self.player_image, True, False)
+
+        jump_skin = os.path.join("static/sprites/sprite_player/", "sprite_08.png")
+        self.jump_image = pygame.image.load(jump_skin).convert_alpha()
+        self.jump_image = pygame.transform.scale(self.jump_image, (50, 100))
 
         self.direction = ""
         self.playerId = self.game.game_user_id
@@ -48,9 +52,9 @@ class CombatScreen:
 
         self.player1_velocity_y = 0
         self.player1_on_ground = True
-        self.ground_level = 300
+        self.ground_level = 380
         self.gravity = 0.8
-        self.jump_strength = -15
+        self.jump_strength = -20
 
         self.moving_left = False
         self.moving_right = False
@@ -65,9 +69,7 @@ class CombatScreen:
                 if self.player1_on_ground:
                     self.player1_velocity_y = self.jump_strength
                     self.player1_on_ground = False
-                    if not self.player1_on_ground:
-                        self.player1_image = pygame.transform.scale(pygame.image.load(
-                            os.path.join("static/sprites/sprite_player/", "sprite_02.png")).convert_alpha(), (50, 100))
+
             elif event.key == pygame.K_LEFT:
                 self.moving_left = True
             elif event.key == pygame.K_RIGHT:
@@ -130,10 +132,12 @@ class CombatScreen:
         if self.moving_left:
             self.player1_pos.x -= 10
             self.direction = "left"
+            self.player1_image = pygame.transform.flip(self.player_image, True, False)
             self.send_position(self.player1_pos.x, self.player1_pos.y)
         if self.moving_right:
             self.player1_pos.x += 10
             self.direction = "right"
+            self.player1_image = self.player_image
             self.send_position(self.player1_pos.x, self.player1_pos.y)
 
         if not self.player1_on_ground:
@@ -148,8 +152,7 @@ class CombatScreen:
     def check_collisions(self):
         player1_rect = self.player1_image.get_rect(topleft=self.player1_pos)
         player2_rect = self.player2_image.get_rect(topleft=self.player2_pos)
-
-        if player1_rect.colliderect(player2_rect):
+        if player1_rect.colliderect(player2_rect) and self.is_attacking:
             print("Collision detected!")
 
     def draw_health_bars(self, screen):
@@ -166,6 +169,8 @@ class CombatScreen:
 
         if self.is_attacking:
             current_frame = self.attack_frames[int(self.attack_frame_index)]
+            if self.direction == 'left':
+                current_frame = pygame.transform.flip(current_frame, True, False)
             screen.blit(current_frame, self.player1_pos)
         else:
             screen.blit(self.player1_image, self.player1_pos)

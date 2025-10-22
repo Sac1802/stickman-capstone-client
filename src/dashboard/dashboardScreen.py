@@ -34,9 +34,41 @@ class DashboardScreen:
         self.invite_button_feedback_message = None
         self.invite_button_feedback_timer = 0
 
+        # State for chained invitation
+        self.pending_invitation_for_user = None
+
+    def send_create_game_request(self):
+        if self.game.client_socket and self.game.aes_key and self.game.aes_iv:
+            request = {
+                "type": "create_game",
+                "payload": {}
+            }
+            threading.Thread(target=send_encrypted_request,
+                             args=(self.game.client_socket, request, self.game.aes_key, self.game.aes_iv)).start()
+            print("[Dashboard] Create game request sent.")
+        else:
+            print("[Dashboard] Client not connected or keys missing. Cannot create game.")
 
     def handle_server_message(self, message):
-        if "users" in message:
+        # Handle create_game response
+        if message.get("message", "").startswith("Game created:"):
+            try:
+                # Extract gameId from a message like "Game created: 123"
+                game_id_str = message["message"].split(":")[1].strip()
+                game_id = int(game_id_str)
+                self.game.current_game_id = game_id
+                print(f"[Dashboard] Game created with ID: {game_id}")
+
+                # If an invitation was pending, send it now
+                if self.pending_invitation_for_user:
+                    print(f"[Dashboard] Proceeding with pending invitation for {self.pending_invitation_for_user}")
+                    self.send_invite_request(self.pending_invitation_for_user)
+                    self.pending_invitation_for_user = None # Clear pending state
+
+            except (ValueError, IndexError) as e:
+                print(f"[Dashboard] Error parsing gameId from message: {message}, error: {e}")
+
+        elif "users" in message:
             users = message.get("users", [])
             # Filter out the current user by username
             self.connected_users = [user for user in users if user != self.game.game_username]
@@ -48,11 +80,11 @@ class DashboardScreen:
             user = message.get("payload", {}).get("username")
             if user and user != self.game.game_username and user in self.connected_users:
                 self.connected_users.remove(user)
-        elif message.get("type") == "GAME_INVITATION":
+        elif message.get("notificationType") == "GAME_INVITATION":
             payload = message.get("payload", {})
             inviter_username = payload.get("inviterUsername")
             game_id = payload.get("gameId")
-            if inviter_username and game_id:
+            if inviter_username and game_id is not None:
                 self.pending_invitation = {'inviter_username': inviter_username, 'gameId': game_id}
                 print(f"Received game invitation from {inviter_username} for game {game_id}")
         elif message.get("type") == "INVITATION_ACCEPTED":
@@ -66,7 +98,7 @@ class DashboardScreen:
                 # Optionally, transition to game screen or update game state
                 self.game.current_game_id = game_id # Set current game ID
                 self.game.set_screen("combat") # Example: move to combat screen
-        elif message.get("type") == "INVITATION_DENIED":
+        elif message.get("notificationType") == "INVITATION_DENIED":
             payload = message.get("payload", {})
             denied_by = payload.get("deniedBy")
             game_id = payload.get("gameId")
@@ -89,13 +121,13 @@ class DashboardScreen:
 
     def send_invite_request(self, target_username):
         if self.game.client_socket and self.game.aes_key and self.game.aes_iv:
-            game_id_to_invite = self.game.current_game_id if hasattr(self.game, 'current_game_id') else 0 # Valor por defecto si no está configurado
+            game_id_to_invite = self.game.current_game_id if hasattr(self.game, 'current_game_id') else 1 
 
             request = {
                 "type": "SEND_INVITATION",
                 "payload": {
                     "username": target_username,
-                    "idGame": game_id_to_invite
+                    "gameId": game_id_to_invite 
                 }
             }
 
@@ -113,7 +145,7 @@ class DashboardScreen:
     def send_accept_invitation_request(self):
         if self.game.client_socket and self.game.aes_key and self.game.aes_iv and self.pending_invitation:
             request = {
-                "type": "ACCEPT_INVITATION", # This is the type the client sends to the server
+                "type": "ACCEPT_INVITATION",
                 "payload": {
                     "gameId": self.pending_invitation['gameId'],
                     "inviterUsername": self.pending_invitation['inviter_username']
@@ -128,10 +160,10 @@ class DashboardScreen:
     def send_deny_invitation_request(self):
         if self.game.client_socket and self.game.aes_key and self.game.aes_iv and self.pending_invitation:
             request = {
-                "type": "DENY_INVITATION", # This is the type the client sends to the server
+                "type": "DENY_INVITATION",
                 "payload": {
-                    "gameId": self.pending_invitation['gameId'],
-                    "inviterUsername": self.pending_invitation['inviter_username']
+                    "username": self.pending_invitation['inviter_username'],
+                    "idGame": self.pending_invitation['gameId']
                 }
             }
             threading.Thread(target=send_encrypted_request,
@@ -153,10 +185,13 @@ class DashboardScreen:
                 elif self.invite_button.collidepoint(event.pos):
                     if self.selected_user_index != -1 and self.selected_user_index < len(self.connected_users):
                         target_user = self.connected_users[self.selected_user_index]
-                        print(f"[Dashboard] Invite button clicked. Attempting to send invitation to {target_user}.")
-                        self.send_invite_request(target_user)
-                        self.invite_button_feedback_message = f"Invitation sent to {target_user}!"
-                        self.invite_button_feedback_timer = 90 # Display for 1.5 seconds (30 FPS * 1.5)
+                        print(f"[Dashboard] Invite button clicked for {target_user}. Initiating game creation...")
+                        # Set pending state and create a game. The response will trigger the invitation.
+                        self.pending_invitation_for_user = target_user
+                        self.send_create_game_request()
+
+                        self.invite_button_feedback_message = f"Creating game to invite {target_user}..."
+                        self.invite_button_feedback_timer = 90 
                     else:
                         print("[Dashboard] Invite button clicked, but no user selected or invalid selection.")
                         self.invite_button_feedback_message = "Please select a user to invite."
@@ -236,17 +271,39 @@ class DashboardScreen:
 
         # Draw pending invitation prompt
         if self.pending_invitation:
-            inviter = self.pending_invitation['inviter_username']
-            invite_msg = self.font.render(f"Invitation from {inviter}! Game ID: {self.pending_invitation['gameId']}", True, (255, 255, 0))
-            screen.blit(invite_msg, (400, 200))
+            # Modal background
+            modal_rect = pygame.Rect(350, 150, 400, 200)
+            pygame.draw.rect(screen, (40, 40, 60), modal_rect)
+            pygame.draw.rect(screen, (255, 255, 255), modal_rect, 2)
 
+            inviter = self.pending_invitation['inviter_username']
+            
+            # Invitation text
+            invite_msg_text = f"Invitation from {inviter}!"
+            invite_msg = self.font.render(invite_msg_text, True, (255, 255, 0))
+            invite_msg_rect = invite_msg.get_rect(center=(modal_rect.centerx, modal_rect.top + 40))
+            screen.blit(invite_msg, invite_msg_rect)
+
+            # Game ID text
+            game_id_text = f"Game ID: {self.pending_invitation['gameId']}"
+            game_id_msg = self.font.render(game_id_text, True, (255, 255, 0))
+            game_id_msg_rect = game_id_msg.get_rect(center=(modal_rect.centerx, modal_rect.top + 80))
+            screen.blit(game_id_msg, game_id_msg_rect)
+
+            # Reposition buttons to be centered within the modal
+            self.accept_button_rect.center = (modal_rect.centerx - 60, modal_rect.bottom - 50)
+            self.decline_button_rect.center = (modal_rect.centerx + 60, modal_rect.bottom - 50)
+
+            # Draw buttons
             pygame.draw.rect(screen, (0, 200, 0), self.accept_button_rect)
             accept_text = self.font.render("Accept", True, (255, 255, 255))
-            screen.blit(accept_text, (self.accept_button_rect.x + 15, self.accept_button_rect.y + 10))
+            accept_text_rect = accept_text.get_rect(center=self.accept_button_rect.center)
+            screen.blit(accept_text, accept_text_rect)
 
             pygame.draw.rect(screen, (200, 0, 0), self.decline_button_rect)
             decline_text = self.font.render("Decline", True, (255, 255, 255))
-            screen.blit(decline_text, (self.decline_button_rect.x + 15, self.decline_button_rect.y + 10))
+            decline_text_rect = decline_text.get_rect(center=self.decline_button_rect.center)
+            screen.blit(decline_text, decline_text_rect)
 
         # Draw invitation response message
         if self.invitation_response_message:

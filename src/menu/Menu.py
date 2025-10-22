@@ -13,6 +13,8 @@ class Menu:
 
         # Botones
         self.code_button = pygame.Rect(50, 120, 150, 40)
+        self.history_button = pygame.Rect(50, 160, 150, 40)
+
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -57,6 +59,8 @@ class Menu:
 
         # Boton
         pygame.draw.rect(screen, (100,100,200), self.code_button)
+        pygame.draw.rect(screen, (100,100,200), self.history_button)
 
         # Botones
         screen.blit(self.font.render("Create Room", True, (255,255,122)), (self.code_button.x+10, self.code_button.y+10))
+        screen.blit(self.font.render("match history", True, (255,255,122)), (self.history_button.x+10, self.history_button.y+10))

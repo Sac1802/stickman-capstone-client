@@ -15,6 +15,7 @@ import base64
 import queue # Import the queue module
 
 pygame.init()
+pygame.mixer.init()
 
 def fix_base64_padding(b64_str: str) -> str:
     """Corrige el padding base64 si falta (= o ==)."""
